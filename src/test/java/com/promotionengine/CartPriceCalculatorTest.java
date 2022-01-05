@@ -44,7 +44,6 @@ public class CartPriceCalculatorTest {
 	}
 
 	private void setupTestProducts() {
-		// TODO Auto-generated method stub
 		List<Product> testProducts = new ArrayList<Product>() {
 			{
 				add(new Product("A", 50));
@@ -62,7 +61,6 @@ public class CartPriceCalculatorTest {
 	}
 
 	private void setupTestPromotions() {
-		// TODO Auto-generated method stub
 		List<Promotion> testPromotions= new ArrayList<Promotion>();
 		testPromotions.add(new Promotion(1, "3 of A's for 130", new HashMap<String, Integer>(){
 			{
@@ -81,9 +79,6 @@ public class CartPriceCalculatorTest {
 			}
 		}, PromotionType.COMBINEDSKUS, 30d, null));
 		when(promotionsProvider.GetPromotions()).thenReturn(testPromotions);
-
-		
-		
 	}
 
 	@Test
