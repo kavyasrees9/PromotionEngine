@@ -6,6 +6,7 @@ import com.promotionengine.model.Cart;
 
 @Component
 public class CartPriceCalculator implements ICartPriceCalculator {
+	
 
 	@Override
 	public double GetCartTotalPrice(Cart cart) {
