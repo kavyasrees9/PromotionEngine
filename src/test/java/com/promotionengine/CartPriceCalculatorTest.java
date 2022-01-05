@@ -7,10 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import com.promotionengine.data.Cart;
-import com.promotionengine.data.ICartPriceCalculator;
 import com.promotionengine.data.IProductsProvider;
 import com.promotionengine.data.IPromotionsProvider;
+import com.promotionengine.model.Cart;
 
 @SpringBootTest
 public class CartPriceCalculatorTest {

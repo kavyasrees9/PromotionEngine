@@ -1,4 +1,6 @@
-package com.promotionengine.data;
+package com.promotionengine;
+
+import com.promotionengine.model.Cart;
 
 public interface ICartPriceCalculator {
 

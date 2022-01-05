@@ -1,4 +1,4 @@
-package com.promotionengine.data;
+package com.promotionengine.model;
 
 public class Cart {
 

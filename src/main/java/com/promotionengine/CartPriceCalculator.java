@@ -1,6 +1,8 @@
-package com.promotionengine.data;
+package com.promotionengine;
 
 import org.springframework.stereotype.Component;
+
+import com.promotionengine.model.Cart;
 
 @Component
 public class CartPriceCalculator implements ICartPriceCalculator {
