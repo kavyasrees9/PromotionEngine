@@ -10,6 +10,7 @@ import java.util.List;
 import com.promotionengine.data.IProductsProvider;
 import com.promotionengine.data.IPromotionsProvider;
 import com.promotionengine.model.Cart;
+import com.promotionengine.model.DiscountType;
 import com.promotionengine.model.Product;
 import com.promotionengine.model.Promotion;
 import com.promotionengine.model.PromotionType;
@@ -47,6 +48,8 @@ public class CartPriceCalculatorTest {
 				add(new Product("B", 30));
 				add(new Product("C", 20));
 				add(new Product("D", 15));
+				add(new Product("E", 10));
+				add(new Product("F", 40));
 			}
 		};
 		// setup get products mock
@@ -59,22 +62,45 @@ public class CartPriceCalculatorTest {
 
 	private void setupTestPromotions() {
 		List<Promotion> testPromotions = new ArrayList<Promotion>();
-		testPromotions.add(new Promotion(1, "3 of A's for 130", new HashMap<String, Integer>() {
+
+		testPromotions.add(new Promotion(1, "3 of A's for 130", 
+		new HashMap<String, Integer>() {
 			{
 				put("A", 3);
 			}
-		}, PromotionType.MULTIPLEITEMSOFSKU, 130d, null));
+		}, 
+		PromotionType.MULTIPLEITEMSOFSKU,
+		DiscountType.PROMOTIONALFIXEDPRICE, 130d, null));
+
 		testPromotions.add(new Promotion(2, "2 of B's for 45", new HashMap<String, Integer>() {
 			{
 				put("B", 2);
 			}
-		}, PromotionType.MULTIPLEITEMSOFSKU, 45d, null));
+		}, PromotionType.MULTIPLEITEMSOFSKU,
+		DiscountType.PROMOTIONALFIXEDPRICE, 45d, null));
+
 		testPromotions.add(new Promotion(3, "C & D for 30", new HashMap<String, Integer>() {
 			{
 				put("C", 1);
 				put("D", 1);
 			}
-		}, PromotionType.COMBINEDSKUS, 30d, null));
+		}, PromotionType.COMBINEDSKUS,
+		DiscountType.PROMOTIONALFIXEDPRICE, 30d, null));
+
+		testPromotions.add(new Promotion(4, "E discounted by 5", new HashMap<String, Integer>() {
+			{
+				put("E", 1);
+			}
+		}, PromotionType.MULTIPLEITEMSOFSKU,
+		DiscountType.DISCOUNTONPRICE, null, 5d));
+
+		testPromotions.add(new Promotion(5, "F discounted by 5%", new HashMap<String, Integer>() {
+			{
+				put("F", 1);
+			}
+		}, PromotionType.MULTIPLEITEMSOFSKU,
+		DiscountType.PERCENTAGEDISCOUNT, null, 5d));
+
 		when(promotionsProvider.GetPromotions()).thenReturn(testPromotions);
 	}
 
@@ -94,9 +120,22 @@ public class CartPriceCalculatorTest {
 
 	@Test
 	void ScenarioC() {
-		Cart cart = new Cart("A", "A", "A", "B", "B", "B", "B", "B", "C","D");
+		Cart cart = new Cart("A", "A", "A", "B", "B", "B", "B", "B", "C", "D");
 		double totalPrice = cartPriceCalculator.GetCartTotalPrice(cart);
 		assertEquals(280, totalPrice);
 	}
 
+	@Test
+	void CheckEDiscountedBy5() {
+		Cart cart = new Cart("A", "B", "C", "E");
+		double totalPrice = cartPriceCalculator.GetCartTotalPrice(cart);
+		assertEquals(105, totalPrice);
+	}
+
+	@Test
+	void CheckFDiscountedBy5Percent() {
+		Cart cart = new Cart("A", "B", "C", "E", "F");
+		double totalPrice = cartPriceCalculator.GetCartTotalPrice(cart);
+		assertEquals(143, totalPrice);
+	}
 }
