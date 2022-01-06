@@ -44,4 +44,14 @@ public class Cart {
 		super();
 		SKUs = sKUs;
 	}
+
+	public Cart(String... sKUs) {
+		super();
+		for (String sku : sKUs)
+			SKUs.add(sku);
+	}
+
+	public void addPromotionalProductsItem(PromotionalProductsItem promotionalProductsItem) {
+		this.promotionalProductsItems.add(promotionalProductsItem);
+	}
 }
