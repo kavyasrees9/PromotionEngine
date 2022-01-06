@@ -4,10 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -23,7 +28,6 @@ import com.promotionengine.model.Promotion;
 import com.promotionengine.model.PromotionType;
 
 @SpringBootTest
-@TestInstance(Lifecycle.PER_CLASS)
 public class CartPriceCalculatorTest {
 
 	@MockBean
@@ -35,7 +39,7 @@ public class CartPriceCalculatorTest {
 	@Autowired
 	ICartPriceCalculator cartPriceCalculator;
 
-	@BeforeAll
+	@BeforeEach
 	void init() {
 		// setup test products
 		setupTestProducts();
@@ -61,10 +65,10 @@ public class CartPriceCalculatorTest {
 	}
 
 	private void setupTestPromotions() {
-		List<Promotion> testPromotions= new ArrayList<Promotion>();
-		testPromotions.add(new Promotion(1, "3 of A's for 130", new HashMap<String, Integer>(){
+		List<Promotion> testPromotions = new ArrayList<Promotion>();
+		testPromotions.add(new Promotion(1, "3 of A's for 130", new HashMap<String, Integer>() {
 			{
-				put("A",3);
+				put("A", 3);
 			}
 		}, PromotionType.MULTIPLEITEMSOFSKU, 130d, null));
 		testPromotions.add(new Promotion(2, "2 of B's for 45", new HashMap<String, Integer>() {
@@ -83,9 +87,15 @@ public class CartPriceCalculatorTest {
 
 	@Test
 	void ScenarioA() {
-		Cart cart = new Cart("A", "B", "C");
-
+		Cart cart = new Cart(Arrays.asList("A", "B", "C"));
 		double totalPrice = cartPriceCalculator.GetCartTotalPrice(cart);
 		assertEquals(100, totalPrice);
+	}
+
+	@Test
+	void ScenarioB() {
+		Cart cart = new Cart(Arrays.asList("A", "A", "A", "A", "A", "B", "B", "B", "B", "B", "C"));
+		double totalPrice = cartPriceCalculator.GetCartTotalPrice(cart);
+		assertEquals(370, totalPrice);
 	}
 }
