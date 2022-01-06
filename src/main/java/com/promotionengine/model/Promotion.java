@@ -10,6 +10,10 @@ public class Promotion {
 		return id;
 	}
 
+	public DiscountType getDiscountType() {
+		return discountType;
+	}
+
 	public String getTitle() {
 		return title;
 	}
@@ -35,14 +39,17 @@ public class Promotion {
 	private PromotionType promotionType;
 	private Double promotionalFixedPrice;
 	private Double discount;
+	private DiscountType discountType;
 
-	public Promotion(int id, String title, Map<String, Integer> productCountRules, PromotionType promotionType,
+	public Promotion(int id, String title, Map<String, Integer> productCountRules, 
+			PromotionType promotionType, DiscountType discountType,
 			Double promotionalFixedPrice, Double discount) {
 		super();
 		this.id = id;
 		this.title = title;
 		this.productCountRules = productCountRules;
 		this.promotionType = promotionType;
+		this.discountType = discountType;
 		this.promotionalFixedPrice = promotionalFixedPrice;
 		this.discount = discount;
 	}
