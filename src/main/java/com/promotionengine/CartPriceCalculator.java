@@ -9,8 +9,10 @@ import java.util.stream.Collectors;
 import com.promotionengine.data.IProductsProvider;
 import com.promotionengine.data.IPromotionsProvider;
 import com.promotionengine.model.Cart;
+import com.promotionengine.model.DiscountType;
 import com.promotionengine.model.Product;
 import com.promotionengine.model.Promotion;
+import com.promotionengine.model.PromotionType;
 import com.promotionengine.model.PromotionalProductsItem;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,7 @@ import org.springframework.stereotype.Component;
 public class CartPriceCalculator implements ICartPriceCalculator {
 
 	@Autowired
-	IProductsProvider productPrvider;
+	IProductsProvider productProvider;
 
 	@Autowired
 	IPromotionsProvider promotionsProvider;
@@ -39,10 +41,10 @@ public class CartPriceCalculator implements ICartPriceCalculator {
 
 		// apply promotions
 		for (Promotion promo : promotions) {
-			boolean applyPromtion = true;
+			boolean applyPromotion = true;
 
-			//keep applying the same promotion as many times as it can
-			while (applyPromtion) {
+			// keep applying the same promotion as many times as it can
+			while (applyPromotion) {
 				List<String> promoSKUs = new ArrayList<String>();
 
 				for (Map.Entry<String, Integer> rule : promo.getProductCountRules().entrySet()) {
@@ -55,14 +57,14 @@ public class CartPriceCalculator implements ICartPriceCalculator {
 								.limit(rule.getValue())
 								.collect(Collectors.toList()));
 					} else {
-						applyPromtion = false;
+						applyPromotion = false;
 						break;
 					}
 				}
 
 				// if all rules of promo match then add promo product item to cart
 				// along with products
-				if (applyPromtion) {
+				if (applyPromotion) {
 					// remove promo matched skus from cartSKUs
 					promoSKUs.forEach(pSKU -> cartSKUs.remove(pSKU));
 
@@ -82,7 +84,7 @@ public class CartPriceCalculator implements ICartPriceCalculator {
 	private List<Product> getProductsForSKUs(List<String> skus) {
 		List<Product> products = new ArrayList<>();
 		for (String sku : skus) {
-			products.add(productPrvider.GetProduct(sku));
+			products.add(productProvider.GetProduct(sku));
 		}
 		return products;
 	}
@@ -98,7 +100,28 @@ public class CartPriceCalculator implements ICartPriceCalculator {
 
 		// promotional products
 		for (PromotionalProductsItem promoProds : cart.getPromotionalProductsItems()) {
-			totalPrice += promoProds.getPromotion().getPromotionalFixedPrice();
+			Promotion promo = promoProds.getPromotion();
+
+			switch (promo.getDiscountType()) {
+				case PROMOTIONALFIXEDPRICE:
+					totalPrice += promo.getPromotionalFixedPrice();
+					break;
+				case DISCOUNTONPRICE:
+					for (Product product : promoProds.getProducts()) {
+						totalPrice += product.getPrice() - promo.getDiscount();
+					}
+					break;
+				case PERCENTAGEDISCOUNT:
+					for (Product product : promoProds.getProducts()) {
+						totalPrice += product.getPrice() - (product.getPrice() * promo.getDiscount() / 100);
+					}
+					break;
+				default:
+					for (Product product : promoProds.getProducts()) {
+						totalPrice += product.getPrice();
+					}
+					break;
+			}
 		}
 
 		return totalPrice;
