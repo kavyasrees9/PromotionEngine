@@ -4,21 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.promotionengine.data.IProductsProvider;
 import com.promotionengine.data.IPromotionsProvider;
@@ -26,6 +13,12 @@ import com.promotionengine.model.Cart;
 import com.promotionengine.model.Product;
 import com.promotionengine.model.Promotion;
 import com.promotionengine.model.PromotionType;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 @SpringBootTest
 public class CartPriceCalculatorTest {
@@ -87,15 +80,23 @@ public class CartPriceCalculatorTest {
 
 	@Test
 	void ScenarioA() {
-		Cart cart = new Cart(Arrays.asList("A", "B", "C"));
+		Cart cart = new Cart("A", "B", "C");
 		double totalPrice = cartPriceCalculator.GetCartTotalPrice(cart);
 		assertEquals(100, totalPrice);
 	}
 
 	@Test
 	void ScenarioB() {
-		Cart cart = new Cart(Arrays.asList("A", "A", "A", "A", "A", "B", "B", "B", "B", "B", "C"));
+		Cart cart = new Cart("A", "A", "A", "A", "A", "B", "B", "B", "B", "B", "C");
 		double totalPrice = cartPriceCalculator.GetCartTotalPrice(cart);
 		assertEquals(370, totalPrice);
 	}
+
+	@Test
+	void ScenarioC() {
+		Cart cart = new Cart("A", "A", "A", "B", "B", "B", "B", "B", "C","D");
+		double totalPrice = cartPriceCalculator.GetCartTotalPrice(cart);
+		assertEquals(280, totalPrice);
+	}
+
 }
